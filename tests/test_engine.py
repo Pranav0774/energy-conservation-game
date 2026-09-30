@@ -117,3 +117,28 @@ def test_rating_is_relative_to_par():
 def test_score_never_negative():
     s = {a.key: [True] * 24 for a in APPLIANCES}
     assert evaluate(s, APPLIANCES, 5).score == 0
+
+
+def test_fractional_hours():
+    s = empty()
+    s["ac"][14] = 0.5  # 30 minutes of a 1.5 kW unit
+    assert energy_kwh(s, APPLIANCES) == pytest.approx(0.75)
+
+
+def test_ui_config_matches_engine():
+    from game.ui_config import build_config
+
+    cfg = build_config()
+    assert {a["key"] for a in cfg["appliances"]} == {a.key for a in APPLIANCES}
+    assert cfg["co2"] == CO2_KG_PER_KWH
+    assert set(cfg["tariff"]) == {"peak", "standard", "offpeak"}
+
+
+def test_sanitize_schedule_clamps_and_fills():
+    from game.ui_config import sanitize_schedule
+
+    clean = sanitize_schedule({"ac": [5, -1, "x"], "bogus": [1] * 24})
+    assert len(clean["ac"]) == 24
+    assert clean["ac"][:3] == [1.0, 0.0, 0.0]
+    assert "bogus" not in clean
+    assert clean["fridge"] == [0.0] * 24

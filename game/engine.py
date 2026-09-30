@@ -1,6 +1,7 @@
 """Energy, CO2, cost and score calculations for the conservation game.
 
-A schedule maps an appliance key to a list of 24 booleans (True = running that hour).
+A schedule maps an appliance key to 24 numbers, one per hour of the day. Each number is the
+fraction of that hour the appliance ran (True/1.0 = the whole hour, 0.5 = thirty minutes).
 """
 from dataclasses import dataclass
 
@@ -12,7 +13,18 @@ TARIFF = {"peak": 0.30, "standard": 0.15, "offpeak": 0.08}  # currency per kWh
 PEAK_HOURS = set(range(17, 22))
 OFFPEAK_HOURS = set(range(22, 24)) | set(range(0, 6))
 
-Schedule = dict[str, list[bool]]
+# Score = BASE + comfort + budget + timing - essentials. See docs/design.md.
+BASE = 300.0
+COMFORT_MAX = 500.0
+BUDGET_BONUS_MAX = 200.0
+OVER_BUDGET_PENALTY = 600.0
+TIMING_MAX = 100.0
+ESSENTIAL_PENALTY = 200.0
+RATING_FRACTIONS = {"Gold": 0.90, "Silver": 0.78, "Bronze": 0.65}  # of the level's par score
+
+EPS = 1e-6
+
+Schedule = dict[str, list[float]]
 
 
 def tariff_period(hour: int) -> str:
@@ -23,16 +35,15 @@ def tariff_period(hour: int) -> str:
     return "standard"
 
 
-def hours_on(schedule: Schedule, key: str) -> int:
-    return sum(bool(x) for x in schedule.get(key, []))
+def hours_on(schedule: Schedule, key: str) -> float:
+    return sum(float(x) for x in schedule.get(key, []))
 
 
 def hourly_kwh(schedule: Schedule, appliances: list[Appliance]) -> list[float]:
     out = [0.0] * 24
     for a in appliances:
-        for h, on in enumerate(schedule.get(a.key, [False] * 24)):
-            if on:
-                out[h] += a.watts / 1000
+        for h, on in enumerate(schedule.get(a.key, [0.0] * 24)):
+            out[h] += a.watts / 1000 * float(on)
     return out
 
 
@@ -61,7 +72,7 @@ def comfort_ratio(schedule: Schedule, appliances: list[Appliance]) -> float:
 
 
 def missing_essentials(schedule: Schedule, appliances: list[Appliance]) -> list[Appliance]:
-    return [a for a in appliances if a.essential and hours_on(schedule, a.key) < a.target_hours]
+    return [a for a in appliances if a.essential and hours_on(schedule, a.key) < a.target_hours - EPS]
 
 
 def period_shares(schedule: Schedule, appliances: list[Appliance]) -> tuple[float, float]:
@@ -94,12 +105,9 @@ class Result:
 
 def rate(score: int, par_score: float = 800) -> str:
     """Rating relative to the level's par (roughly the best score a good plan can reach)."""
-    if score >= 0.90 * par_score:
-        return "Gold"
-    if score >= 0.78 * par_score:
-        return "Silver"
-    if score >= 0.65 * par_score:
-        return "Bronze"
+    for name, fraction in RATING_FRACTIONS.items():
+        if score >= fraction * par_score:
+            return name
     return "Keep trying"
 
 
@@ -111,16 +119,15 @@ def evaluate(
     missing = missing_essentials(schedule, appliances)
     off, peak = period_shares(schedule, appliances)
 
-    base = 300.0
-    comfort_pts = 500 * comfort
+    comfort_pts = COMFORT_MAX * comfort
     if kwh <= budget_kwh:
-        budget_pts = 200 * (budget_kwh - kwh) / budget_kwh
+        budget_pts = BUDGET_BONUS_MAX * (budget_kwh - kwh) / budget_kwh
     else:
-        budget_pts = -600 * (kwh - budget_kwh) / budget_kwh
-    timing_pts = 100 * (off - peak)
-    essential_pen = 200 * len(missing)
+        budget_pts = -OVER_BUDGET_PENALTY * (kwh - budget_kwh) / budget_kwh
+    timing_pts = TIMING_MAX * (off - peak)
+    essential_pen = ESSENTIAL_PENALTY * len(missing)
 
-    score = max(0, round(base + comfort_pts + budget_pts + timing_pts - essential_pen))
+    score = max(0, round(BASE + comfort_pts + budget_pts + timing_pts - essential_pen))
     return Result(
         kwh=kwh,
         co2=co2_kg(kwh),
@@ -128,7 +135,7 @@ def evaluate(
         budget_kwh=budget_kwh,
         comfort=comfort,
         missing=[a.name for a in missing],
-        base_pts=base,
+        base_pts=BASE,
         comfort_pts=comfort_pts,
         budget_pts=budget_pts,
         timing_pts=timing_pts,

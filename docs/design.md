@@ -3,11 +3,17 @@
 ## Goal
 Teach energy conservation. The player plans one household day (24 hours) under a fixed energy budget, choosing when each appliance runs, and is scored on energy consumed, CO₂ equivalent, cost and comfort.
 
-## Core loop
-1. Choose a difficulty (sets the daily budget).
-2. Tick the hours each appliance runs on a 10 × 24 grid.
-3. Live feedback: energy (kWh), CO₂ (kg), cost, comfort (%) and a budget bar.
-4. Press **Finish the day** and see the score, rating, breakdown, hourly chart and a tip.
+## Core loop (real time)
+1. Choose a difficulty (sets the daily budget) and press **Start the day**.
+2. One game day (24 h) plays out live in about 72 seconds (1×, 2× and 4× speeds, pause with Space).
+3. Click an appliance in the animated house, or its card below, to switch it on or off. The sky, lighting and tariff change with the time of day.
+4. Live feedback: energy (kWh) against the budget ring, power now (kW), CO₂ (kg), cost, comfort (%), a live hourly chart and toast alerts (peak pricing starts, 80% of budget, over budget).
+5. At 24:00 the results screen shows score, rating, breakdown and tips.
+
+## Architecture
+- `frontend/` is a small web app (HTML, CSS, JavaScript, SVG, canvas) shown inside Streamlit as a custom component. It runs the simulation in the browser.
+- `app.py` sends it the appliance table, levels, tariff and scoring constants from Python (`game/ui_config.py`), so there is one source of truth.
+- When the day ends the browser sends the schedule back and `game/engine.py` calculates the official score. The browser also calculates it live with the same formulas (checked to match).
 
 ## Appliances
 Ten appliances (see `game/appliances.py`). Each has wattage, a wanted number of hours (`target_hours`) and a comfort weight. **Essential** appliances (refrigerator 24 h, cooktop 2 h) must reach their target hours or the player is penalised.

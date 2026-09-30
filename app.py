@@ -1,111 +1,48 @@
-import pandas as pd
-import plotly.graph_objects as go
+from dataclasses import asdict
+from pathlib import Path
+
 import streamlit as st
+import streamlit.components.v1 as components
 
 from game.appliances import APPLIANCES
-from game.engine import CO2_KG_PER_KWH, CURRENCY, PEAK_HOURS, OFFPEAK_HOURS, evaluate, hourly_kwh
+from game.engine import evaluate
 from game.levels import LEVELS
+from game.ui_config import build_config, sanitize_schedule
 
-HOUR_COLS = [f"{h:02d}" for h in range(24)]
-BY_NAME = {f"{a.icon} {a.name}": a for a in APPLIANCES}
-
-st.set_page_config(page_title="Smart Energy Conservation Game", page_icon="⚡", layout="wide")
-
-
-def fresh_grid() -> pd.DataFrame:
-    rows = {}
-    for label, a in BY_NAME.items():
-        rows[label] = [a.key == "fridge"] * 24  # the fridge starts on; everything else is up to you
-    return pd.DataFrame.from_dict(rows, orient="index", columns=HOUR_COLS)
-
-
-def to_schedule(df: pd.DataFrame) -> dict:
-    return {BY_NAME[label].key: [bool(x) for x in row] for label, row in df.iterrows()}
-
-
-if "grid_version" not in st.session_state:
-    st.session_state.grid_version = 0
-    st.session_state.finished = False
-
-# ---------- sidebar ----------
-with st.sidebar:
-    st.header("⚡ Game settings")
-    level_name = st.radio("Difficulty", list(LEVELS), index=1)
-    level = LEVELS[level_name]
-    st.caption(level.description)
-    st.metric("Daily budget", f"{level.budget_kwh:.1f} kWh")
-    if st.button("Reset day"):
-        st.session_state.grid_version += 1
-        st.session_state.finished = False
-        st.rerun()
-    st.markdown(
-        f"**Tariff**  \n🟢 Off-peak (22:00–06:00) cheapest  \n🟡 Standard  \n🔴 Peak (17:00–22:00) most expensive"
-    )
-
-# ---------- main ----------
-st.title("⚡ Smart Energy Conservation Game")
-st.write(
-    "Plan your household's day. Tick the hours each appliance runs. Stay under the energy budget, "
-    "keep the essentials running, and keep everyone comfortable."
+st.set_page_config(
+    page_title="Smart Energy Conservation Game",
+    page_icon="⚡",
+    layout="wide",
+    initial_sidebar_state="collapsed",
 )
 
-edited = st.data_editor(
-    fresh_grid(),
-    key=f"grid_{st.session_state.grid_version}",
-    column_config={c: st.column_config.CheckboxColumn(c, width="small") for c in HOUR_COLS},
+# Remove Streamlit's own chrome so the game fills the page.
+st.markdown(
+    """
+    <style>
+      #MainMenu, footer, [data-testid="stHeader"], [data-testid="stSidebar"],
+      [data-testid="collapsedControl"], [data-testid="stToolbar"] { display: none !important; }
+      .stApp { background: #070b14; }
+      .block-container { padding: 0 !important; max-width: 100% !important; }
+      iframe { border: 0; display: block; }
+    </style>
+    """,
+    unsafe_allow_html=True,
 )
-schedule = to_schedule(edited)
-appliances = APPLIANCES
-res = evaluate(schedule, appliances, level.budget_kwh, level.par_score)
 
-# live metrics
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("Energy consumed", f"{res.kwh:.2f} kWh", f"{res.kwh - level.budget_kwh:+.2f} vs budget", delta_color="inverse")
-c2.metric("CO₂ equivalent", f"{res.co2:.2f} kg")
-c3.metric("Cost", f"{CURRENCY}{res.cost:.2f}")
-c4.metric("Comfort", f"{res.comfort * 100:.0f}%")
+# The real-time game is a small web app in frontend/. It plays the day live in the browser;
+# when the day ends it sends the schedule back here and this file scores it with game/engine.py.
+game = components.declare_component("energy_game", path=str(Path(__file__).parent / "frontend"))
 
-used = res.kwh / level.budget_kwh
-st.progress(min(used, 1.0), text=f"Budget used: {used * 100:.0f}%")
-if used > 1:
-    st.error(f"Over budget by {res.kwh - level.budget_kwh:.2f} kWh!")
-if res.missing:
-    st.warning("Essential appliances not running enough: " + ", ".join(res.missing))
+st.session_state.setdefault("result", None)
+st.session_state.setdefault("nonce", None)
 
-if st.button("✅ Finish the day", type="primary"):
-    st.session_state.finished = True
+value = game(config=build_config(), result=st.session_state.result, key="game", default=None)
 
-# ---------- results ----------
-if st.session_state.finished:
-    st.divider()
-    st.header(f"Result: {res.rating} ({res.score} pts)")
-    st.subheader("Score breakdown")
-    breakdown = pd.DataFrame(
-        {
-            "Component": ["Base", "Comfort", "Budget", "Off-peak timing", "Missing essentials"],
-            "Points": [res.base_pts, res.comfort_pts, res.budget_pts, res.timing_pts, -res.essential_pen],
-        }
-    )
-    breakdown["Points"] = breakdown["Points"].round(0).astype(int)
-    st.table(breakdown.set_index("Component"))
-
-    fig = go.Figure()
-    for a in APPLIANCES:
-        one = {a.key: schedule[a.key]}
-        fig.add_bar(x=HOUR_COLS, y=hourly_kwh(one, [a]), name=f"{a.icon} {a.name}")
-    fig.update_layout(barmode="stack", xaxis_title="Hour", yaxis_title="kWh", title="Energy use by hour")
-    for h in PEAK_HOURS | OFFPEAK_HOURS:
-        fig.add_vrect(
-            x0=h - 0.5, x1=h + 0.5, line_width=0,
-            fillcolor="red" if h in PEAK_HOURS else "green", opacity=0.07,
-        )
-    st.plotly_chart(fig)
-
-    per_app = sorted(
-        ((a, sum(hourly_kwh({a.key: schedule[a.key]}, [a]))) for a in APPLIANCES), key=lambda t: -t[1]
-    )
-    top, top_kwh = per_app[0]
-    if res.kwh > 0:
-        st.info(f"💡 Your biggest consumer was **{top.name}** ({top_kwh / res.kwh * 100:.0f}% of your energy).")
-    if res.kwh <= level.budget_kwh:
-        st.success(f"You saved {level.budget_kwh - res.kwh:.2f} kWh, about {(level.budget_kwh - res.kwh) * CO2_KG_PER_KWH:.2f} kg of CO₂.")
+if value and value.get("nonce") != st.session_state.nonce and value.get("level") in LEVELS:
+    level = LEVELS[value["level"]]
+    schedule = sanitize_schedule(value.get("schedule", {}))
+    res = evaluate(schedule, APPLIANCES, level.budget_kwh, level.par_score)
+    st.session_state.result = {**asdict(res), "nonce": value["nonce"]}
+    st.session_state.nonce = value["nonce"]
+    st.rerun()
