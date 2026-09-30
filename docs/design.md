@@ -5,7 +5,7 @@ Teach energy conservation. The player plans one household day (24 hours) under a
 
 ## Core loop (real time)
 1. Choose a difficulty (sets the daily budget) and press **Start the day**.
-2. One game day (24 h) plays out live in about 72 seconds (1×, 2× and 4× speeds, pause with Space).
+2. One game day (24 h) plays out live in about 4 minutes at 1× (10 s per game hour; 2× and 4× speeds; pause with Space). Change `SEC_PER_HOUR` in `frontend/game.js` to adjust.
 3. Click an appliance in the animated house, or its card below, to switch it on or off. The sky, lighting and tariff change with the time of day.
 4. Live feedback: energy (kWh) against the budget ring, power now (kW), CO₂ (kg), cost, comfort (%), a live hourly chart and toast alerts (peak pricing starts, 80% of budget, over budget).
 5. At 24:00 the results screen shows score, rating, breakdown and tips.

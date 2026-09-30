@@ -14,7 +14,7 @@
   const pad = (n) => String(n).padStart(2, "0");
 
   /* ---------------- constants ---------------- */
-  const SEC_PER_HOUR = 3; // real seconds per game hour at 1x
+  const SEC_PER_HOUR = 10; // real seconds per game hour at 1x (a full day is 4 minutes)
   const COLORS = {
     fridge: "#5ac8fa", cooktop: "#ff7a45", ac: "#3d6bff", fan: "#6ee7b7", lights: "#ffd166",
     tv: "#c084fc", computer: "#f472b6", washer: "#94a3b8", heater: "#ef4444", iron: "#a3e635",
@@ -164,6 +164,7 @@
       b.addEventListener("click", () => { S.level = l.name; $$(".lv").forEach((x) => x.classList.toggle("on", x === b)); });
       lv.appendChild(b);
     });
+    $("#dayLen").textContent = `${Math.round((24 * SEC_PER_HOUR) / 60)} minutes`;
     $("#startBtn").addEventListener("click", startDay);
     $("#playBtn").addEventListener("click", togglePlay);
     $$("#speedSeg button").forEach((b) => b.addEventListener("click", () => {
