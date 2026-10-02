@@ -68,41 +68,13 @@
   const period = (h) => (cfg.peak_hours.includes(h) ? "peak" : cfg.offpeak_hours.includes(h) ? "offpeak" : "standard");
   const app = (key) => cfg.appliances.find((a) => a.key === key);
   const level = () => cfg.levels.find((l) => l.name === S.level);
-  const hoursOn = (key) => S.min[key].reduce((a, b) => a + b, 0) / 60;
-  const hourKwh = (h) => cfg.appliances.reduce((s, a) => s + (a.watts / 1000) * S.min[a.key][h] / 60, 0);
+  const hoursOn = (key) => Scoring.hoursOn(S.min, key);
+  const hourKwh = (h) => Scoring.hourKwh(cfg, S.min, h);
   const powerKw = () => cfg.appliances.reduce((s, a) => s + (S.on[a.key] ? a.watts / 1000 : 0), 0);
   const money = (v) => cfg.currency + v.toFixed(2);
-
-  function totals() {
-    let kwh = 0, cost = 0;
-    for (let h = 0; h < 24; h++) { const k = hourKwh(h); kwh += k; cost += k * cfg.tariff[period(h)]; }
-    return { kwh, cost, co2: kwh * cfg.co2 };
-  }
-  function comfortRatio() {
-    const opt = cfg.appliances.filter((a) => !a.essential);
-    const tot = opt.reduce((s, a) => s + a.weight, 0);
-    const met = opt.reduce((s, a) => s + a.weight * Math.min(hoursOn(a.key), a.target_hours) / a.target_hours, 0);
-    return tot ? met / tot : 0;
-  }
-  function essentialsMissing() {
-    return cfg.appliances.filter((a) => a.essential && hoursOn(a.key) < a.target_hours - 1e-6);
-  }
-  // Same formulas as game/engine.py; used for the live view and as a fallback for the final score.
-  function evaluateLocal() {
-    const sc = cfg.scoring, lv = level(), tt = totals(), comfort = comfortRatio(), miss = essentialsMissing();
-    let off = 0, peak = 0;
-    for (let h = 0; h < 24; h++) { const k = hourKwh(h); if (cfg.offpeak_hours.includes(h)) off += k; if (cfg.peak_hours.includes(h)) peak += k; }
-    if (tt.kwh > 0) { off /= tt.kwh; peak /= tt.kwh; }
-    const comfort_pts = sc.comfort_max * comfort;
-    const budget_pts = tt.kwh <= lv.budget ? sc.budget_bonus_max * (lv.budget - tt.kwh) / lv.budget : -sc.over_penalty * (tt.kwh - lv.budget) / lv.budget;
-    const timing_pts = sc.timing_max * (off - peak);
-    const essential_pen = sc.essential_penalty * miss.length;
-    const score = Math.max(0, Math.round(sc.base + comfort_pts + budget_pts + timing_pts - essential_pen));
-    let rating = "Keep trying";
-    for (const [name, f] of Object.entries(sc.rating_fractions)) { if (score >= f * lv.par) { rating = name; break; } }
-    return { kwh: tt.kwh, co2: tt.co2, cost: tt.cost, budget_kwh: lv.budget, comfort, missing: miss.map((a) => a.name),
-      base_pts: sc.base, comfort_pts, budget_pts, timing_pts, essential_pen, score, rating };
-  }
+  const totals = () => Scoring.totals(cfg, S.min);
+  const comfortRatio = () => Scoring.comfort(cfg, S.min);
+  const evaluateLocal = () => Scoring.evaluate(cfg, level(), S.min); // same formulas as game/engine.py
 
   /* ---------------- build UI ---------------- */
   function el(tag, attrs = {}, html = "") {
@@ -498,7 +470,20 @@
     });
     $("#result").classList.remove("hidden");
     fitHeight();
+    if (!verified) {
+      // If the Python engine doesn't answer, say so instead of waiting forever.
+      const nonce = S.nonce;
+      setTimeout(() => {
+        const v = $(".verify");
+        if (S.nonce === nonce && v && !v.classList.contains("ok")) v.textContent = inStreamlit ? "Scored in your browser (engine did not respond)" : "Scored in your browser";
+      }, 8000);
+    }
   }
 
-  window.__game = { S, evaluateLocal, get cfg() { return cfg; }, toggle, startDay };
+  // Test hook: lets automated play-tests fast-forward the real simulation (not used by the UI).
+  function advance(minutes) {
+    for (let i = 0; i < minutes && S.t < 1440; i++) stepMinute();
+    if (S.t >= 1440 && S.phase === "play") finishDay();
+  }
+  window.__game = { S, evaluateLocal, get cfg() { return cfg; }, toggle, startDay, advance };
 })();

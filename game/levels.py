@@ -12,5 +12,5 @@ class Level:
 LEVELS = {
     "Easy": Level("Easy", 14.0, 800, "A relaxed budget. Avoid waste and you'll be fine."),
     "Medium": Level("Medium", 10.0, 750, "You'll have to choose what really matters."),
-    "Hard": Level("Hard", 7.0, 660, "Every kWh counts. Timing and trade-offs decide the score."),
+    "Hard": Level("Hard", 7.0, 640, "Every kWh counts. Timing and trade-offs decide the score."),
 }

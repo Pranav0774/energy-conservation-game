@@ -29,8 +29,9 @@ game/appliances.py  appliance data
 game/engine.py      energy, CO2, cost, scoring
 game/levels.py      difficulty levels
 game/ui_config.py   constants sent to the front end
-tests/              unit tests
-docs/               research.md, design.md
+tests/              unit tests + browser/Python scoring parity test
+tools/balance.py    estimates best achievable score per level
+docs/               research.md, design.md, playtest.md
 ```
 
 Note: after editing files in `game/`, stop Streamlit (Ctrl+C) and start it again.

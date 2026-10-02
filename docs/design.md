@@ -23,9 +23,9 @@ Ten appliances (see `game/appliances.py`). Each has wattage, a wanted number of 
 |---|---|---|
 | Easy | 14 kWh | 800 |
 | Medium | 10 kWh | 750 |
-| Hard | 7 kWh | 660 |
+| Hard | 7 kWh | 640 |
 
-Full-comfort use is 21.3 kWh, so every level forces trade-offs. Par is the best score a hill-climbing optimiser found (about 798 / 755 / 666).
+Full-comfort use is 21.3 kWh, so every level forces trade-offs. Par is about the best score a hill-climbing optimiser found (810 / 749 / 636); see [playtest.md](playtest.md) and `python -m tools.balance`.
 
 ## Calculations (`game/engine.py`)
 - Energy: sum over appliances and hours of watts / 1000.
