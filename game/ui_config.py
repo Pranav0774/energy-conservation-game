@@ -1,7 +1,8 @@
 """Bridge between the Python engine and the browser front end (frontend/)."""
 from . import engine
 from .appliances import APPLIANCES
-from .levels import LEVELS
+from .events import EVENTS
+from .levels import LEVELS, par_for
 
 
 def build_config() -> dict:
@@ -19,8 +20,17 @@ def build_config() -> dict:
             for a in APPLIANCES
         ],
         "levels": [
-            {"name": lv.name, "budget": lv.budget_kwh, "par": lv.par_score, "description": lv.description}
+            {
+                "name": lv.name,
+                "budget": lv.budget_kwh,
+                "par": lv.par_score,
+                "par_by_event": {key: par_for(lv.name, key) for key in ["none", *EVENTS]},
+                "description": lv.description,
+            }
             for lv in LEVELS.values()
+        ],
+        "events": [
+            {"key": e.key, "name": e.name, "blurb": e.blurb, "changes": e.changes} for e in EVENTS.values()
         ],
         "tariff": engine.TARIFF,
         "peak_hours": sorted(engine.PEAK_HOURS),

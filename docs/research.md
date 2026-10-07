@@ -42,3 +42,13 @@ The 1:2:4 ratio (off-peak : standard : peak) is broadly typical of time-of-use p
 ## 4. Open questions
 - Target region (for CO₂ factor, currency and tariff).
 - Whether a solar panel or battery option is wanted in Week 3.
+
+## 5. Facts in the "Why it matters" panel (Week 3)
+Shown at the end of each day. The CO₂-to-distance conversion is arithmetic on the EPA figure; the other facts are quoted as general statements.
+
+| Fact | Source | Check status |
+|---|---|---|
+| A typical passenger car emits about 400 g CO₂ per mile (about 250 g per km) | [U.S. EPA, Greenhouse Gas Equivalencies Calculator](https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator-calculations-and-references) | Found in EPA material via search; used for the "km driven" figure |
+| LEDs use at least 75% less energy than incandescent bulbs and last up to 25 times longer | [U.S. Department of Energy](https://www.energy.gov/articles/addressing-misinformation-doe-appliance-standards) | Reported by search from energy.gov pages |
+| Standby power is roughly 5–10% of residential electricity use | U.S. DOE estimate, as cited by [EnergySage](https://www.energysage.com/energy-management/phantom-loads-overview/) | Found through a secondary source citing DOE. **Re-check against the primary DOE page before submitting the report** |
+| Shifting flexible loads to off-peak hours helps the grid and your bill | General property of time-of-use tariffs | Explanatory statement, no number |

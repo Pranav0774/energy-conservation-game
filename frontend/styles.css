@@ -243,3 +243,33 @@ button:focus-visible, .card-dev:focus-visible { outline: 2px solid var(--cyan); 
   .top { grid-template-columns: 1fr auto; } .clock { font-size: 28px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* week 3: events, progress, learning */
+.event-banner { position: absolute; left: 12px; top: 12px; max-width: min(420px, 60%); padding: 10px 14px; border-radius: 12px; background: rgba(40, 24, 8, 0.82); backdrop-filter: blur(8px); border: 1px solid rgba(255, 184, 77, 0.45); display: flex; flex-direction: column; gap: 2px; animation: toastIn 0.5s ease-out; }
+.event-banner.hidden { display: none; }
+.event-banner b { font-size: 13px; letter-spacing: 0.04em; color: var(--amber); text-transform: uppercase; }
+.event-banner span { font-size: 12px; color: #e8dcc6; line-height: 1.35; }
+.event-banner em { font-style: normal; font-size: 11px; color: #bfae8c; margin-top: 2px; }
+.toast.info i { background: var(--cyan); }
+.card-dev.changed::after { content: "needs changed today"; position: absolute; left: 14px; bottom: -8px; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; color: #1b1203; background: var(--amber); padding: 2px 8px; border-radius: 999px; }
+.opt-row { display: flex; align-items: center; justify-content: center; gap: 14px; margin: -8px 0 22px; font-size: 13px; color: var(--muted); }
+.lv .best { margin-top: 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--muted); }
+.tip b.pos { color: var(--green); } .tip b.neg { color: var(--red); }
+.tip.fact { background: rgba(76, 201, 240, 0.07); border: 1px solid rgba(76, 201, 240, 0.18); border-radius: 10px; padding: 10px 12px 10px 24px; }
+.tip.fact::before { left: 10px; top: 16px; }
+.tip small { display: block; color: var(--muted); font-size: 11px; margin-top: 4px; }
+.newbest { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #1b1203; background: linear-gradient(135deg, #f5c542, #ffb84d); padding: 3px 10px; border-radius: 999px; }
+.res-cols + .res-cols { margin-top: -6px; }
+.toast { max-width: min(330px, 44vw); line-height: 1.35; }
+.event-banner { max-width: min(380px, 44%); }
+@media (max-width: 680px) {
+  .event-banner { max-width: calc(100% - 24px); right: 12px; }
+  .toasts { top: auto; bottom: 44px; }
+  .toast { max-width: calc(100vw - 60px); }
+}
+@media (max-width: 680px) {
+  .event-banner { padding: 6px 10px; top: 8px; left: 8px; max-width: calc(100% - 16px); }
+  .event-banner span { display: none; }
+  .event-banner em { margin-top: 0; font-size: 10px; }
+  .stage-hint { display: none; }
+}

@@ -49,9 +49,32 @@ Full-comfort use is 21.3 kWh, so every level forces trade-offs. Par is about the
 Design checks (Medium): running nothing scores 100, essentials only 428, full comfort 202, so neither extreme wins. A balanced plan scores 500–755.
 
 ## Screens
-- **Sidebar:** difficulty, daily budget, tariff legend, reset.
-- **Main:** appliance grid, four live metrics, budget bar, warnings.
-- **Results:** rating and score, breakdown table, stacked hourly chart shaded by peak/off-peak, biggest-consumer tip, savings message.
+- **Start:** difficulty cards (with your best score), random-events switch, Start button.
+- **Play:** header with the clock, pause and speed; animated house; budget ring, power, CO₂, cost, comfort and essentials; live hourly chart; appliance cards.
+- **Results:** medal and score, four metric tiles, score breakdown, personalized tips, progress against the last run, "why it matters".
 
-## Out of scope for Week 1 (planned)
-Random events, solar option, personalised tip list, high scores (Week 3); playtesting and report (Week 4).
+## Week 3 additions
+### Random events
+At the start of a day there is an 80% chance (if "Random events" is on) of one event. An event changes what the household *wants* (target hours), not the rules or the budget. A banner and highlighted appliance cards show what changed.
+
+| Event | Wanted hours today |
+|---|---|
+| Heatwave | Air conditioner 11 h, ceiling fan 14 h |
+| Guests visiting | Cooktop 3 h, TV 7 h, lights 9 h |
+| Work-from-home day | Computer 9 h, lights 8 h |
+| Laundry day | Washing machine 2 h, iron 2 h |
+| Cold snap | Water heater 3 h |
+
+Python applies the same changes when scoring (`game/events.py`). Par is computed per level and event (`PAR_BY_EVENT` in `game/levels.py`, from `python -m tools.balance`) so ratings stay fair.
+
+### Personalized tips (`frontend/tips.js`)
+Up to four tips from the player's actual day. "What if" numbers re-score a modified copy of the day, so they are exact: running the biggest appliance one hour less, shifting a peak-hour appliance to night, lights on in daylight, comfort left unused while under budget, essentials missed.
+
+### Progress
+Each finished run is saved in the browser (`localStorage`, last 20 runs per level). The result screen compares energy, score and cost with the previous run on that level and flags a new personal best. The start screen shows each level's best. If the browser blocks storage, progress is kept only until the page is closed.
+
+### Learning panel
+CO₂ shown as distance driven and as a yearly total, plus one fact (sources in [research.md](research.md)). A "Did you know?" message also appears mid-morning during play.
+
+## Still to do (Week 4)
+Play-testing with real players, polish, project report and demo. See [playtest.md](playtest.md).

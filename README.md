@@ -19,15 +19,17 @@ python -m pytest
 2. Click appliances in the house (or press 1–0) to switch them on and off. The fridge starts on. Space pauses.
 3. Stay under the daily budget, keep essentials (fridge, cooktop) running, and keep comfort high.
 4. Run heavy appliances off-peak (22:00–06:00) to lower cost and earn timing points.
-5. At the end of the day you get your score, rating and tips.
+5. A random event (heatwave, guests, work-from-home, laundry day, cold snap) may change what the household wants. Turn events off on the start screen if you prefer.
+6. At the end of the day you get your score, rating, personalized tips, a comparison with your last run and a short "why it matters" panel.
 
 ## Project layout
 ```
 app.py              Streamlit shell; scores the finished day with the Python engine
-frontend/           real-time game UI (index.html, styles.css, game.js)
+frontend/           real-time game UI (index.html, styles.css, game.js, scoring.js, tips.js)
 game/appliances.py  appliance data
 game/engine.py      energy, CO2, cost, scoring
-game/levels.py      difficulty levels
+game/levels.py      difficulty levels and par scores
+game/events.py      random day events
 game/ui_config.py   constants sent to the front end
 tests/              unit tests + browser/Python scoring parity test
 tools/balance.py    estimates best achievable score per level

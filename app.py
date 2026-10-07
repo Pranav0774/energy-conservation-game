@@ -6,7 +6,8 @@ import streamlit.components.v1 as components
 
 from game.appliances import APPLIANCES
 from game.engine import evaluate
-from game.levels import LEVELS
+from game.events import EVENTS, apply_event
+from game.levels import LEVELS, par_for
 from game.ui_config import build_config, sanitize_schedule
 
 st.set_page_config(
@@ -41,8 +42,9 @@ value = game(config=build_config(), result=st.session_state.result, key="game", 
 
 if value and value.get("nonce") != st.session_state.nonce and value.get("level") in LEVELS:
     level = LEVELS[value["level"]]
+    event = value.get("event") if value.get("event") in EVENTS else None
     schedule = sanitize_schedule(value.get("schedule", {}))
-    res = evaluate(schedule, APPLIANCES, level.budget_kwh, level.par_score)
+    res = evaluate(schedule, apply_event(APPLIANCES, event), level.budget_kwh, par_for(level.name, event))
     st.session_state.result = {**asdict(res), "nonce": value["nonce"]}
     st.session_state.nonce = value["nonce"]
     st.rerun()

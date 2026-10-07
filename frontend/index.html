@@ -200,6 +200,7 @@
         <g id="tags" pointer-events="none"></g>
       </svg>
       <div class="toasts" id="toasts" aria-live="polite"></div>
+      <div class="event-banner hidden" id="eventBanner" role="status"></div>
       <div class="stage-hint" id="stageHint">Click an appliance to switch it on or off</div>
     </section>
 
@@ -250,6 +251,8 @@
       <h1>Run the day.<br>Stay under budget.</h1>
       <p class="lead">One day plays out in about <span id="dayLen">4 minutes</span> (speed it up with 2× or 4×). Switch appliances on and off as the hours pass. Keep the essentials running, keep everyone comfortable, and use power when it's cheap.</p>
       <div class="levels" id="levels"></div>
+      <div class="opt-row"><span>Random events</span>
+        <div class="seg" id="evSeg"><button data-ev="on" class="on">On</button><button data-ev="off">Off</button></div></div>
       <button class="btn primary big" id="startBtn">Start the day</button>
       <div class="keys">Space pause · 1–0 toggle appliances</div>
     </div>
@@ -259,6 +262,7 @@
   <div class="overlay hidden" id="result"><div class="panel wide" id="resultPanel"></div></div>
 </div>
 <script src="scoring.js"></script>
+<script src="tips.js"></script>
 <script src="game.js"></script>
 </body>
 </html>

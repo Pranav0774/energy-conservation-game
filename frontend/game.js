@@ -47,7 +47,18 @@
   const S = {
     phase: "boot", level: "Medium", t: 0, speed: 1, playing: false, acc: 0, last: 0,
     on: {}, min: {}, nonce: null, local: null, shown: {}, flags: {}, ymax: 3, smax: 12,
+    base: null, event: null, eventsOn: true, forceEvent: undefined, progress: null,
   };
+
+  /* ---------------- saved progress (this browser only) ---------------- */
+  const Store = (() => {
+    const KEY = "ecg.v1";
+    let mem = {};
+    return {
+      load() { try { return JSON.parse(localStorage.getItem(KEY)) || mem; } catch (e) { return mem; } },
+      save(d) { mem = d; try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) { /* storage blocked: keep in memory */ } },
+    };
+  })();
 
   /* ---------------- Streamlit bridge ---------------- */
   const inStreamlit = window.parent !== window;
@@ -68,13 +79,16 @@
   const period = (h) => (cfg.peak_hours.includes(h) ? "peak" : cfg.offpeak_hours.includes(h) ? "offpeak" : "standard");
   const app = (key) => cfg.appliances.find((a) => a.key === key);
   const level = () => cfg.levels.find((l) => l.name === S.level);
+  const parFor = () => { const l = level(); return l.par_by_event[S.event || "none"] ?? l.par; };
+  const scoringLevel = () => ({ ...level(), par: parFor() }); // par depends on today's event
+  const eventDef = () => cfg.events.find((e) => e.key === S.event) || null;
   const hoursOn = (key) => Scoring.hoursOn(S.min, key);
   const hourKwh = (h) => Scoring.hourKwh(cfg, S.min, h);
   const powerKw = () => cfg.appliances.reduce((s, a) => s + (S.on[a.key] ? a.watts / 1000 : 0), 0);
   const money = (v) => cfg.currency + v.toFixed(2);
   const totals = () => Scoring.totals(cfg, S.min);
   const comfortRatio = () => Scoring.comfort(cfg, S.min);
-  const evaluateLocal = () => Scoring.evaluate(cfg, level(), S.min); // same formulas as game/engine.py
+  const evaluateLocal = () => Scoring.evaluate(cfg, scoringLevel(), S.min); // same formulas as game/engine.py
 
   /* ---------------- build UI ---------------- */
   function el(tag, attrs = {}, html = "") {
@@ -84,12 +98,15 @@
     return n;
   }
   function resetSim() {
+    if (S.base) cfg.appliances = S.base.map((a) => ({ ...a })); // undo any event changes
+    S.event = null;
     S.t = 0; S.acc = 0; S.playing = false; S.flags = {}; S.nonce = null; S.local = null;
     S.ymax = 3; S.smax = Math.max(12, level().budget * 1.3);
     cfg.appliances.forEach((a) => { S.on[a.key] = a.key === "fridge"; S.min[a.key] = new Array(24).fill(0); });
   }
 
   function init() {
+    S.base = cfg.appliances.map((a) => ({ ...a }));
     resetSim();
     // stars
     const stars = $("#stars");
@@ -132,10 +149,14 @@
     const lv = $("#levels");
     cfg.levels.forEach((l) => {
       const b = el("button", { class: "lv" + (l.name === S.level ? " on" : ""), "data-l": l.name },
-        `<b>${l.name}</b><div class="bud">${l.budget.toFixed(0)}<small> kWh</small></div><p>${l.description}</p>`);
+        `<b>${l.name}</b><div class="bud">${l.budget.toFixed(0)}<small> kWh</small></div><p>${l.description}</p><div class="best"></div>`);
       b.addEventListener("click", () => { S.level = l.name; $$(".lv").forEach((x) => x.classList.toggle("on", x === b)); });
       lv.appendChild(b);
     });
+    $$("#evSeg button").forEach((b) => b.addEventListener("click", () => {
+      S.eventsOn = b.dataset.ev === "on"; $$("#evSeg button").forEach((x) => x.classList.toggle("on", x === b));
+    }));
+    refreshBests();
     $("#dayLen").textContent = `${Math.round((24 * SEC_PER_HOUR) / 60)} minutes`;
     $("#startBtn").addEventListener("click", startDay);
     $("#playBtn").addEventListener("click", togglePlay);
@@ -155,15 +176,32 @@
   }
 
   /* ---------------- game flow ---------------- */
+  function pickEvent() {
+    if (S.forceEvent !== undefined) return S.forceEvent === "none" ? null : S.forceEvent;
+    if (!S.eventsOn || Math.random() < 0.2) return null;
+    return cfg.events[Math.floor(Math.random() * cfg.events.length)].key;
+  }
+  function applyEvent(key) {
+    S.event = key;
+    const ev = eventDef();
+    if (ev) cfg.appliances = S.base.map((a) => ({ ...a, target_hours: ev.changes[a.key] ?? a.target_hours }));
+    const banner = $("#eventBanner");
+    if (!ev) { banner.classList.add("hidden"); return; }
+    const changed = Object.entries(ev.changes).map(([k, h]) => `${S.base.find((a) => a.key === k).name} ${h} h`).join(" · ");
+    banner.innerHTML = `<b>${ev.name}</b><span>${ev.blurb}</span><em>Household now wants: ${changed}</em>`;
+    banner.classList.remove("hidden");
+  }
   function startDay() {
     resetSim();
+    applyEvent(pickEvent());
     S.phase = "play"; S.playing = true;
     $("#menu").classList.add("hidden"); $("#result").classList.add("hidden");
     $("#levelChip").textContent = `${S.level} · ${level().budget.toFixed(0)} kWh`;
     $("#ringOf").textContent = `of ${level().budget.toFixed(1)} kWh`;
     $("#stageHint").classList.remove("gone");
     setTimeout(() => $("#stageHint").classList.add("gone"), 6000);
-    updatePlayIcon(); toast("Day started. Keep the fridge running.", "good");
+    updatePlayIcon();
+    toast(S.event ? `Today: ${eventDef().name}. See what changed above.` : "Day started. Keep the fridge running.", S.event ? "warn" : "good");
   }
   function togglePlay() {
     if (S.phase !== "play") return;
@@ -189,6 +227,7 @@
     const h = Math.floor(S.t / 60);
     for (const a of cfg.appliances) if (S.on[a.key]) S.min[a.key][h] += 1;
     S.t += 1;
+    if (S.t === 600 && Tips.FACTS.length) toast("Did you know? " + Tips.FACTS[Math.floor(Math.random() * Tips.FACTS.length)].text, "info");
     if (S.t % 60 === 0 && S.t < 1440) {
       const nh = S.t / 60, p = period(nh), prev = period(nh - 1);
       if (p !== prev) {
@@ -202,11 +241,12 @@
     S.playing = false; S.phase = "done"; updatePlayIcon();
     S.nonce = Date.now();
     S.local = evaluateLocal();
+    S.progress = recordRun(S.local);
     showResult(S.local, false);
     if (inStreamlit) {
       const schedule = {};
       cfg.appliances.forEach((a) => (schedule[a.key] = S.min[a.key].map((m) => m / 60)));
-      post("streamlit:setComponentValue", { value: { nonce: S.nonce, level: S.level, schedule }, dataType: "json" });
+      post("streamlit:setComponentValue", { value: { nonce: S.nonce, level: S.level, event: S.event, schedule }, dataType: "json" });
     }
   }
 
@@ -282,6 +322,7 @@
       const h = hoursOn(a.key);
       card.querySelector(".bar i").style.width = clamp(h / a.target_hours, 0, 1) * 100 + "%";
       setText(`.card-dev[data-key="${a.key}"] .prog em`, `${h.toFixed(1)} / ${a.target_hours} h`);
+      card.classList.toggle("changed", a.target_hours !== S.base.find((b) => b.key === a.key).target_hours);
     });
 
     // HUD numbers
@@ -413,22 +454,43 @@
   /* ---------------- results ---------------- */
   const MEDAL = { Gold: "#f5c542", Silver: "#c3cbd9", Bronze: "#d08a5b", "Keep trying": "#6f7b98" };
 
-  function tipsFor(r) {
-    const tips = [], lv = level(), tt = totals();
-    const per = cfg.appliances.map((a) => ({ a, kwh: (a.watts / 1000) * hoursOn(a.key) })).sort((x, y) => y.kwh - x.kwh);
-    if (tt.kwh > 0) tips.push(`<b>${per[0].a.name}</b> used ${Math.round((per[0].kwh / tt.kwh) * 100)}% of your energy (${per[0].kwh.toFixed(1)} kWh). It is the biggest lever you have.`);
-    let peakKwh = 0;
-    cfg.peak_hours.forEach((h) => (peakKwh += hourKwh(h)));
-    if (peakKwh > 0.3) {
-      const saved = peakKwh * (cfg.tariff.peak - cfg.tariff.offpeak);
-      tips.push(`${peakKwh.toFixed(1)} kWh ran in the 17:00–22:00 peak. Moving flexible jobs like laundry, water heating and ironing to night would save about ${money(saved)}.`);
+  function recordRun(r) {
+    const d = Store.load(), rec = d[S.level] || { runs: [] };
+    const prev = rec.runs[rec.runs.length - 1] || null;
+    const prevBest = rec.runs.reduce((m, x) => Math.max(m, x.score), -1);
+    rec.runs.push({ score: r.score, kwh: r.kwh, co2: r.co2, cost: r.cost, rating: r.rating, event: S.event, ts: Date.now() });
+    rec.runs = rec.runs.slice(-20);
+    d[S.level] = rec;
+    Store.save(d);
+    return { prev, newBest: prev !== null && r.score > prevBest, first: prev === null, played: rec.runs.length };
+  }
+  function refreshBests() {
+    const d = Store.load();
+    $$(".lv").forEach((b) => {
+      const runs = (d[b.dataset.l] || {}).runs || [];
+      const best = runs.reduce((m, x) => (!m || x.score > m.score ? x : m), null);
+      b.querySelector(".best").textContent = best ? `Best ${best.score} · ${best.rating}` : "Not played yet";
+    });
+  }
+  function progressHtml(r) {
+    const p = S.progress;
+    if (!p) return "";
+    const lines = [];
+    if (p.first) lines.push(`First ${S.level} run saved. Beat it next time!`);
+    else {
+      const dk = ((r.kwh - p.prev.kwh) / p.prev.kwh) * 100, ds = r.score - p.prev.score;
+      lines.push(`Energy <b class="${dk <= 0 ? "pos" : "neg"}">${dk <= 0 ? "−" : "+"}${Math.abs(dk).toFixed(0)}%</b> vs your last ${S.level} run`);
+      lines.push(`Score <b class="${ds >= 0 ? "pos" : "neg"}">${ds >= 0 ? "+" : "−"}${Math.abs(ds)}</b> (was ${p.prev.score})`);
+      lines.push(`Cost <b class="${r.cost <= p.prev.cost ? "pos" : "neg"}">${money(r.cost)}</b> (was ${money(p.prev.cost)})`);
     }
-    if (r.kwh > lv.budget) tips.push(`You went over budget by ${(r.kwh - lv.budget).toFixed(1)} kWh. Cutting the air conditioner by an hour saves ${(app("ac").watts / 1000).toFixed(1)} kWh.`);
-    if (r.missing.length) tips.push(`Essentials fell short: ${r.missing.join(", ")}. Food safety and cooking come first.`);
-    const unmet = cfg.appliances.filter((a) => !a.essential).map((a) => ({ a, gap: (1 - Math.min(hoursOn(a.key) / a.target_hours, 1)) * a.weight })).sort((x, y) => y.gap - x.gap)[0];
-    if (unmet && unmet.gap > 0.5) tips.push(`The household wanted more time with the <b>${unmet.a.name.toLowerCase()}</b>. Look for a cheaper hour instead of skipping it.`);
-    if (r.kwh <= lv.budget && !r.missing.length && r.comfort > 0.6) tips.push(`Well balanced: you stayed under budget and kept most comforts. That is what real energy saving looks like.`);
-    return tips.slice(0, 4);
+    if (p.newBest) lines.unshift('<span class="newbest">New personal best!</span>');
+    return lines.map((l) => `<div class="tip">${l}</div>`).join("");
+  }
+  function learnHtml(r) {
+    const im = Tips.impact(r.co2), fact = Tips.FACTS[Math.floor(Math.random() * Tips.FACTS.length)];
+    return `<div class="tip">Today's electricity caused <b>${r.co2.toFixed(1)} kg</b> of CO₂, about the same as driving a typical car <b>${im.km.toFixed(0)} km</b>.</div>
+      <div class="tip">Days like this for a year would be about <b>${im.yearKg.toFixed(0)} kg</b> of CO₂.</div>
+      <div class="tip fact"><b>Did you know?</b> ${fact.text} <small>${fact.src}</small></div>`;
   }
 
   function showResult(r, verified) {
@@ -450,7 +512,7 @@
     $("#resultPanel").innerHTML = `
       <div class="res-top">
         <div class="medal" style="--mc:${MEDAL[r.rating]}"><div><b id="scoreNum">${r.score}</b><span>${r.rating}</span></div></div>
-        <div class="res-title"><div class="eyebrow">${S.level} · Day complete</div><h2>${headline}</h2><p>${sub}</p>
+        <div class="res-title"><div class="eyebrow">${S.level}${S.event ? " · " + eventDef().name : ""} · Day complete</div><h2>${headline}</h2><p>${sub}</p>
           <span class="verify ${verified ? "ok" : ""}">${verified ? "Scored by the Python game engine" : "Checking with the game engine…"}</span></div>
       </div>
       <div class="res-tiles">
@@ -461,12 +523,16 @@
       </div>
       <div class="res-cols">
         <div class="box"><div class="card-title">Score breakdown</div>${rowHtml}</div>
-        <div class="box"><div class="card-title">What to try next</div><div class="tips">${tipsFor(r).map((t) => `<div class="tip">${t}</div>`).join("")}</div></div>
+        <div class="box"><div class="card-title">What to try next</div><div class="tips">${Tips.build(cfg, scoringLevel(), S.min, r).map((t) => `<div class="tip">${t}</div>`).join("")}</div></div>
+      </div>
+      <div class="res-cols">
+        <div class="box"><div class="card-title">Your progress</div><div class="tips">${progressHtml(r)}</div></div>
+        <div class="box"><div class="card-title">Why it matters</div><div class="tips">${learnHtml(r)}</div></div>
       </div>
       <div class="res-actions"><button class="btn primary big" id="againBtn">Play again</button></div>`;
     $("#againBtn").addEventListener("click", () => {
-      resetSim(); S.phase = "menu"; $("#result").classList.add("hidden"); $("#menu").classList.remove("hidden");
-      S.shown = {}; fitHeight();
+      resetSim(); applyEvent(null); S.phase = "menu"; $("#result").classList.add("hidden"); $("#menu").classList.remove("hidden");
+      S.shown = {}; refreshBests(); fitHeight();
     });
     $("#result").classList.remove("hidden");
     fitHeight();
@@ -485,5 +551,5 @@
     for (let i = 0; i < minutes && S.t < 1440; i++) stepMinute();
     if (S.t >= 1440 && S.phase === "play") finishDay();
   }
-  window.__game = { S, evaluateLocal, get cfg() { return cfg; }, toggle, startDay, advance };
+  window.__game = { S, evaluateLocal, get cfg() { return cfg; }, toggle, startDay, advance, Store };
 })();

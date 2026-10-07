@@ -37,3 +37,12 @@ Played in the browser through the actual game code (`window.__game.advance` fast
 ## Known limits
 - Layout was checked in a Chromium pane at phone-ish and desktop widths, not on real devices.
 - The live "on pace" estimate uses average use so far, so it is jumpy early in the day.
+
+## Week 3 checks
+| Check | Result |
+|---|---|
+| Heatwave day through the real UI: banner shown, AC target 11 h, scored by Python | Browser and Python scores equal (467) |
+| Event changes undone after "Play again" (AC target back to 8 h, banner hidden) | Pass |
+| Second run saved and compared with the first | "New personal best", energy -13%, score +96, cost shown |
+| Browser vs Python scoring on every level x event combination (60 random days each) | Pass |
+| Tips: well-formed on 120 random days; specific tips on hand-made days (over budget, missing fridge, washer at peak) | Pass |

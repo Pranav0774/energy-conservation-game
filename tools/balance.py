@@ -6,15 +6,16 @@ import random
 
 from game.appliances import APPLIANCES as A
 from game.engine import evaluate
+from game.events import EVENTS, apply_event
 from game.levels import LEVELS
 
 KEYS = [a.key for a in A]
 
 
-def search(budget: float, par: float, seed: int, iters: int = 12000):
+def search(budget: float, par: float, seed: int, appliances=A, iters: int = 12000):
     rnd = random.Random(seed)
     s = {k: [1.0 if k == "fridge" else 0.0] * 24 for k in KEYS}
-    cur = evaluate(s, A, budget, par).score
+    cur = evaluate(s, appliances, budget, par).score
 
     def sweep(steps, n):
         nonlocal cur
@@ -22,7 +23,7 @@ def search(budget: float, par: float, seed: int, iters: int = 12000):
             k, h = rnd.choice(KEYS), rnd.randrange(24)
             old = s[k][h]
             s[k][h] = min(1.0, max(0.0, old + rnd.choice(steps)))
-            score = evaluate(s, A, budget, par).score
+            score = evaluate(s, appliances, budget, par).score
             if score >= cur:
                 cur = score
             else:
@@ -30,13 +31,19 @@ def search(budget: float, par: float, seed: int, iters: int = 12000):
 
     sweep([1.0, -1.0], iters)
     sweep([0.5, -0.5, 0.25, -0.25], iters // 2)
-    return evaluate(s, A, budget, par)
+    return evaluate(s, appliances, budget, par)
+
+
+def best_score(budget: float, appliances, seeds: int = 8) -> int:
+    return max(search(budget, 800, s, appliances).score for s in range(seeds))
 
 
 if __name__ == "__main__":
+    # Prints the par table to paste into game/levels.py (PAR_BY_EVENT).
+    print("PAR_BY_EVENT = {")
     for lv in LEVELS.values():
-        best = max((search(lv.budget_kwh, lv.par_score, seed) for seed in range(16)), key=lambda r: r.score)
-        print(
-            f"{lv.name:7} par={lv.par_score:.0f}  best={best.score}  "
-            f"kwh={best.kwh:.1f}  comfort={best.comfort:.2f}  rating={best.rating}"
-        )
+        row = {"none": best_score(lv.budget_kwh, A)}
+        for key in EVENTS:
+            row[key] = best_score(lv.budget_kwh, apply_event(A, key))
+        print(f'    "{lv.name}": {row},')
+    print("}")
