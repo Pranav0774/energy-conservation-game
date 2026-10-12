@@ -7,12 +7,14 @@ A Streamlit game where you plan a household's day under a fixed energy budget. I
 python -m pip install -r requirements.txt
 python -m streamlit run app.py
 ```
-Then open http://localhost:8501.
+Then open http://localhost:8501. Tested with Python 3.14 and Streamlit 1.64.
 
 ## Test
 ```bash
+python -m pip install -r requirements-dev.txt
 python -m pytest
 ```
+Node.js is optional. If it is installed, the tests also check that the browser's scoring matches Python's.
 
 ## How to play
 1. Pick a difficulty and press **Start the day**. The day plays out live.
@@ -31,11 +33,19 @@ game/engine.py      energy, CO2, cost, scoring
 game/levels.py      difficulty levels and par scores
 game/events.py      random day events
 game/ui_config.py   constants sent to the front end
-tests/              unit tests + browser/Python scoring parity test
+tests/              unit, app smoke, and browser/Python scoring parity tests
 tools/balance.py    estimates best achievable score per level
-docs/               research.md, design.md, playtest.md
+docs/               user_guide.md, report.md, design.md, research.md,
+                    playtest.md, playtest_kit.md, demo_script.md
 ```
 
 Note: after editing files in `game/`, stop Streamlit (Ctrl+C) and start it again.
 
 See [docs/design.md](docs/design.md) for the scoring rules and [docs/research.md](docs/research.md) for data sources.
+
+## Documents
+- [User guide](docs/user_guide.md): how to play and troubleshooting
+- [Project report](docs/report.md): objectives, design, scoring, testing, limitations
+- [Design notes](docs/design.md) and [research sources](docs/research.md)
+- [Play-test record](docs/playtest.md) and [play-test kit](docs/playtest_kit.md)
+- [Demo script](docs/demo_script.md)

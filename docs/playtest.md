@@ -30,8 +30,8 @@ Played in the browser through the actual game code (`window.__game.advance` fast
 | Result screen if the engine does not answer | Falls back to "Scored in your browser" after 8 s |
 
 ## Not yet done (needs people)
-- Play-test with 3–5 real players (planned for Week 3/4): do they understand the budget ring, peak pricing and the essentials rule? Is 4 minutes per day right?
-- Try on a slow college PC and a phone.
+- Play-test with 3–5 real players using [playtest_kit.md](playtest_kit.md): do they understand the budget ring, peak pricing and the essentials rule? Is 4 minutes per day right?
+- Try on a slow college PC and a real phone.
 - Tune the tips wording after seeing real plays.
 
 ## Known limits
@@ -46,3 +46,13 @@ Played in the browser through the actual game code (`window.__game.advance` fast
 | Second run saved and compared with the first | "New personal best", energy -13%, score +96, cost shown |
 | Browser vs Python scoring on every level x event combination (60 random days each) | Pass |
 | Tips: well-formed on 120 random days; specific tips on hand-made days (over budget, missing fridge, washer at peak) | Pass |
+
+## Week 4 checks
+| Check | Result |
+|---|---|
+| Soak test: 36 random full days through the real UI (3 levels x 6 event settings x 2) | Every day confirmed by the Python engine, 0 score or rating mismatches, 0 JavaScript errors. Scores were all 0 because random play overshoots the budget, so this only proved the plumbing |
+| Soak test with realistic sparse days: 54 full days | 0 unconfirmed, 0 mismatches, 0 "undefined/NaN" in result text, 0 errors. Scores 0 to 648 (40 non-zero), ratings Silver 2, Bronze 3, Keep trying 49 |
+| Help panel opens from the start screen, closes with the button | Pass |
+| App smoke test and script-order test | Pass (42 tests in total) |
+| Tab hidden pauses the day | Implemented, **not tested** (the test browser cannot hide its tab) |
+| Real players | **Not done.** Use the play-test kit |

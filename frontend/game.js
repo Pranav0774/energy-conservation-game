@@ -158,13 +158,27 @@
     }));
     refreshBests();
     $("#dayLen").textContent = `${Math.round((24 * SEC_PER_HOUR) / 60)} minutes`;
+    const openHelp = () => { S.helpWasPlaying = S.playing; S.playing = false; updatePlayIcon(); $("#help").classList.remove("hidden"); $("#helpClose").focus(); fitHeight(); };
+    const closeHelp = () => { $("#help").classList.add("hidden"); if (S.phase === "play" && S.helpWasPlaying) { S.playing = true; updatePlayIcon(); } };
+    $("#helpBtn").addEventListener("click", openHelp);
+    $("#howBtn").addEventListener("click", openHelp);
+    $("#helpClose").addEventListener("click", closeHelp);
+    window.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#help").classList.contains("hidden")) closeHelp(); });
+    $("#clearBtn").addEventListener("click", () => {
+      if (!confirm("Delete your saved scores and personal bests on this browser?")) return;
+      Store.save({}); refreshBests(); toast("Saved scores cleared", "info");
+    });
+    // pause automatically if the player switches tabs, so the day doesn't run unattended
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden && S.phase === "play" && S.playing) { S.playing = false; updatePlayIcon(); toast("Paused while the tab was hidden", "info"); }
+    });
     $("#startBtn").addEventListener("click", startDay);
     $("#playBtn").addEventListener("click", togglePlay);
     $$("#speedSeg button").forEach((b) => b.addEventListener("click", () => {
       S.speed = +b.dataset.speed; $$("#speedSeg button").forEach((x) => x.classList.toggle("on", x === b));
     }));
     window.addEventListener("keydown", (e) => {
-      if (S.phase !== "play") return;
+      if (S.phase !== "play" || !$("#help").classList.contains("hidden")) return;
       if (e.code === "Space") { e.preventDefault(); togglePlay(); return; }
       const n = e.key === "0" ? 9 : parseInt(e.key, 10) - 1;
       if (n >= 0 && n < cfg.appliances.length) toggle(cfg.appliances[n].key);
@@ -342,7 +356,7 @@
 
     // pace
     const pace = $("#pace");
-    if (S.t < 90) { pace.className = "pace"; setText("#pace", S.phase === "menu" ? "Start the day to see your pace" : "Measuring your pace…"); }
+    if (S.t < 180) { pace.className = "pace"; setText("#pace", S.phase === "menu" ? "Start the day to see your pace" : "Measuring your pace…"); }
     else {
       const proj = (tt.kwh / S.t) * 1440, over = proj > lv.budget;
       // projection from average use so far; the fridge alone keeps it non-zero
