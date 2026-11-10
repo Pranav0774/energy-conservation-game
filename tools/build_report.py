@@ -350,9 +350,6 @@ def build_report(path: Path):
           P("Collect at least twenty real runs, ideally from students who have not seen the game, and re-run the analysis. The play-test kit in the repository has the observation sheet. After that, "
             "add region presets for tariff and emission factor, and a solar and battery option with a cloudy-day event.")]
 
-    team = team_names()
-    if team:
-        s += [P("10. Team", "h1"), table([["Name", "Contribution"]] + [[m["name"], m.get("role", "")] for m in team], [6 * cm, W - 6 * cm])]
 
     # references
     refs = [

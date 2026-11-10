@@ -1,6 +1,6 @@
 {
   "team": [
-    { "name": "", "role": "" },
-    { "name": "", "role": "" }
+    { "name": "Pranav Ganesh", "role": "game and front end" },
+    { "name": "Tharun Kumar", "role": "data analysis and report" }
   ]
 }
