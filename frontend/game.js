@@ -172,6 +172,24 @@
     document.addEventListener("visibilitychange", () => {
       if (document.hidden && S.phase === "play" && S.playing) { S.playing = false; updatePlayIcon(); toast("Paused while the tab was hidden", "info"); }
     });
+    const exportOverlay = $("#export");
+    $("#exportBtn").addEventListener("click", () => {
+      const { csv, runs } = Exporter.toCsv(Store.load(), S.base);
+      $("#exportCount").textContent = runs ? `${runs} saved run${runs === 1 ? "" : "s"} on this browser` : "No runs saved yet. Play a day first.";
+      $("#exportText").value = runs ? csv : "";
+      $("#exportDl").disabled = !runs;
+      exportOverlay.classList.remove("hidden");
+    });
+    $("#exportClose").addEventListener("click", () => exportOverlay.classList.add("hidden"));
+    $("#exportDl").addEventListener("click", () => {
+      try {
+        const url = URL.createObjectURL(new Blob([$("#exportText").value], { type: "text/csv" }));
+        const a = el("a", { href: url, download: "energy_game_runs.csv" });
+        document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+        toast("Download started. If nothing happens, copy the text instead.", "info");
+      } catch (e) { toast("Download is blocked here. Select the text and copy it.", "warn"); }
+    });
+    $("#exportText").addEventListener("focus", (e) => e.target.select());
     $("#startBtn").addEventListener("click", startDay);
     $("#playBtn").addEventListener("click", togglePlay);
     $$("#speedSeg button").forEach((b) => b.addEventListener("click", () => {
@@ -468,13 +486,24 @@
   /* ---------------- results ---------------- */
   const MEDAL = { Gold: "#f5c542", Silver: "#c3cbd9", Bronze: "#d08a5b", "Keep trying": "#6f7b98" };
 
+  const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
   function recordRun(r) {
     const d = Store.load(), rec = d[S.level] || { runs: [] };
     const prev = rec.runs[rec.runs.length - 1] || null;
     const prevBest = rec.runs.reduce((m, x) => Math.max(m, x.score), -1);
-    rec.runs.push({ score: r.score, kwh: r.kwh, co2: r.co2, cost: r.cost, rating: r.rating, event: S.event, ts: Date.now() });
-    rec.runs = rec.runs.slice(-20);
+    const hourly = Array.from({ length: 24 }, (_, h) => +hourKwh(h).toFixed(4));
+    const total = hourly.reduce((a, b) => a + b, 0);
+    const share = (hrs) => (total > 0 ? hrs.reduce((s, h) => s + hourly[h], 0) / total : 0);
+    rec.runs.push({
+      id: uid(), ts: Date.now(), score: r.score, rating: r.rating, event: S.event, budget: level().budget, par: parFor(),
+      kwh: +r.kwh.toFixed(4), co2: +r.co2.toFixed(4), cost: +r.cost.toFixed(4), comfort: +r.comfort.toFixed(4),
+      missing: r.missing.length, off: +share(cfg.offpeak_hours).toFixed(4), peak: +share(cfg.peak_hours).toFixed(4),
+      hrs: Object.fromEntries(cfg.appliances.map((a) => [a.key, +hoursOn(a.key).toFixed(3)])), kwh_h: hourly,
+    });
+    rec.runs = rec.runs.slice(-200);
     d[S.level] = rec;
+    d._pid = d._pid || uid(); // anonymous random id, groups one browser's runs
+    d._v = 2;
     Store.save(d);
     return { prev, newBest: prev !== null && r.score > prevBest, first: prev === null, played: rec.runs.length };
   }

@@ -70,6 +70,9 @@ Your **rating** compares your score with the best score a good plan reaches at t
 4. Avoid the 17:00–22:00 peak for anything the household can do without.
 5. Finish a little under budget rather than far under. Comfort earns more points than leftover energy.
 
+## Saving your runs as data
+On the start screen, **Export my runs (CSV)** shows every run saved in this browser as a CSV. It is anonymous: a random id and your game results, no name or email. Use **Download CSV**, or select the text and copy it into a file ending in `.csv`. If you are helping with the project, send the file to the team. **Clear saved scores** deletes the saved runs and the random id.
+
 ## Troubleshooting
 | Problem | Fix |
 |---|---|

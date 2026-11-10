@@ -1,0 +1,5 @@
+step,rows
+duplicate rows removed,0
+rows with non-positive or reversed range removed,0
+annual kWh figures converted to average watts,1
+"rows not used by the game (standby, idle, other AC types)",7

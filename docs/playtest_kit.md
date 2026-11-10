@@ -53,4 +53,4 @@ Open questions:
 - Typical fixes: change `SEC_PER_HOUR` in `frontend/game.js` if the pace is wrong, reword text in `frontend/index.html` or `frontend/tips.js`, adjust `docs` wording.
 - After changes, run `python -m pytest` and play one full day on each level.
 
-Copy the summary table into `docs/report.md`, section 7, when you are done.
+When you are done, add the numbers to `docs/playtest.md`. To feed the runs into the report, ask each player to use **Export my runs (CSV)** on the start screen, save the files into `data/raw/real_playlogs/`, then run `python -m tools.clean_playlogs`, `python -m tools.analyze` and `python -m tools.build_report`.

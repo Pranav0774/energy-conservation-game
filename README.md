@@ -14,7 +14,9 @@ Then open http://localhost:8501. Tested with Python 3.14 and Streamlit 1.64.
 python -m pip install -r requirements-dev.txt
 python -m pytest
 ```
-Node.js is optional. If it is installed, the tests also check that the browser's scoring matches Python's.
+Node.js is optional. If it is installed, the tests also check that the browser's scoring and CSV export match Python's.
+
+The data analysis, report and slide scripts need more packages: `python -m pip install -r requirements-analysis.txt`, and for the slides `cd tools && npm install`. See [submission/README.md](submission/README.md).
 
 ## How to play
 1. Pick a difficulty and press **Start the day**. The day plays out live.
@@ -34,9 +36,11 @@ game/levels.py      difficulty levels and par scores
 game/events.py      random day events
 game/ui_config.py   constants sent to the front end
 tests/              unit, app smoke, and browser/Python scoring parity tests
-tools/balance.py    estimates best achievable score per level
-docs/               user_guide.md, report.md, design.md, research.md,
-                    playtest.md, playtest_kit.md, demo_script.md
+docs/               user_guide.md, design.md, research.md, playtest.md,
+                    playtest_kit.md, demo_script.md, figures/, images/
+data/               raw/ and clean/ datasets (see data/README.md)
+tools/              balance, simulate_players, clean_*, analyze, build_report
+submission/         the five deliverables (see submission/README.md)
 ```
 
 Note: after editing files in `game/`, stop Streamlit (Ctrl+C) and start it again.
@@ -45,7 +49,7 @@ See [docs/design.md](docs/design.md) for the scoring rules and [docs/research.md
 
 ## Documents
 - [User guide](docs/user_guide.md): how to play and troubleshooting
-- [Project report](docs/report.md): objectives, design, scoring, testing, limitations
+- [Final report (PDF)](submission/4_final_report.pdf): objectives, data, results, inferences, limitations
 - [Design notes](docs/design.md) and [research sources](docs/research.md)
 - [Play-test record](docs/playtest.md) and [play-test kit](docs/playtest_kit.md)
 - [Demo script](docs/demo_script.md)

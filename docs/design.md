@@ -21,11 +21,11 @@ Ten appliances (see `game/appliances.py`). Each has wattage, a wanted number of 
 ## Levels
 | Level | Budget | Par score |
 |---|---|---|
-| Easy | 14 kWh | 800 |
-| Medium | 10 kWh | 750 |
-| Hard | 7 kWh | 640 |
+| Easy | 14 kWh | 809 |
+| Medium | 10 kWh | 756 |
+| Hard | 7 kWh | 636 |
 
-Full-comfort use is 21.3 kWh, so every level forces trade-offs. Par is about the best score a hill-climbing optimiser found (810 / 749 / 636); see [playtest.md](playtest.md) and `python -m tools.balance`.
+Full-comfort use is 21.3 kWh, so every level forces trade-offs. Par is about the best score found by a local search that starts from scripted strategies as well as from an empty day (809 / 756 / 636 on a normal day, with a separate par for each event); see [playtest.md](playtest.md) and `python -m tools.balance`.
 
 ## Calculations (`game/engine.py`)
 - Energy: sum over appliances and hours of watts / 1000.
@@ -75,6 +75,9 @@ Each finished run is saved in the browser (`localStorage`, last 20 runs per leve
 
 ### Learning panel
 CO₂ shown as distance driven and as a yearly total, plus one fact (sources in [research.md](research.md)). A "Did you know?" message also appears mid-morning during play.
+
+## Data export and analysis
+Each finished day is saved with its hours per appliance and energy per hour (last 200 runs per level, in the browser). **Export my runs (CSV)** on the start screen turns them into the play-log layout described in [../data/README.md](../data/README.md). `tools/simulate_players.py` makes simulated days with the same layout, `tools/clean_playlogs.py` cleans both, and `tools/analyze.py` draws the report's graphs.
 
 ## Still to do (Week 4)
 Play-testing with real players, polish, project report and demo. See [playtest.md](playtest.md).

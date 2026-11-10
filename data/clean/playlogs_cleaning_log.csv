@@ -1,0 +1,9 @@
+step,rows
+raw rows read,612
+incomplete rows (a required field is missing or not a number),0
+duplicate run_id,0
+unknown level,0
+unknown event,0
+values outside the possible range,0
+inconsistent totals (CO2 or hourly energy does not match total energy),0
+clean rows kept,612

@@ -10,18 +10,19 @@ class Level:
 
 
 LEVELS = {
-    "Easy": Level("Easy", 14.0, 800, "A relaxed budget. Avoid waste and you'll be fine."),
-    "Medium": Level("Medium", 10.0, 750, "You'll have to choose what really matters."),
-    "Hard": Level("Hard", 7.0, 640, "Every kWh counts. Timing and trade-offs decide the score."),
+    "Easy": Level("Easy", 14.0, 809, "A relaxed budget. Avoid waste and you'll be fine."),
+    "Medium": Level("Medium", 10.0, 756, "You'll have to choose what really matters."),
+    "Hard": Level("Hard", 7.0, 636, "Every kWh counts. Timing and trade-offs decide the score."),
 }
 
 # About the best achievable score per level and event ("none" = a normal day), from `python -m tools.balance`.
-# The search is stochastic (roughly +/-2%), so "none" keeps the values chosen in Week 2.
+# The search is stochastic (roughly +/-2%). It starts from scripted strategies as well as from an empty day,
+# because a plain hill-climb understated the par on some event days (e.g. Easy "guests" 642 vs 777).
 # Events change what the household wants, so the par differs and ratings stay fair.
 PAR_BY_EVENT: dict[str, dict[str, float]] = {
-    "Easy": {"none": 800, "heatwave": 801, "guests": 642, "wfh": 802, "laundry": 800, "coldsnap": 766},
-    "Medium": {"none": 750, "heatwave": 747, "guests": 607, "wfh": 733, "laundry": 728, "coldsnap": 703},
-    "Hard": {"none": 640, "heatwave": 615, "guests": 527, "wfh": 595, "laundry": 605, "coldsnap": 621},
+    "Easy": {"none": 809, "heatwave": 806, "guests": 777, "wfh": 800, "laundry": 794, "coldsnap": 766},
+    "Medium": {"none": 756, "heatwave": 750, "guests": 691, "wfh": 744, "laundry": 730, "coldsnap": 709},
+    "Hard": {"none": 636, "heatwave": 629, "guests": 536, "wfh": 617, "laundry": 619, "coldsnap": 636},
 }
 
 

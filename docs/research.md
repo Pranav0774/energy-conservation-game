@@ -43,12 +43,17 @@ The 1:2:4 ratio (off-peak : standard : peak) is broadly typical of time-of-use p
 - Target region (for CO₂ factor, currency and tariff).
 - Whether a solar panel or battery option is wanted in Week 3.
 
-## 5. Facts in the "Why it matters" panel (Week 3)
-Shown at the end of each day. The CO₂-to-distance conversion is arithmetic on the EPA figure; the other facts are quoted as general statements.
+## 5. Facts in the "Why it matters" panel
+Shown at the end of each day and once during play. What was checked, and how:
 
-| Fact | Source | Check status |
+| Fact | Source | Status |
 |---|---|---|
-| A typical passenger car emits about 400 g CO₂ per mile (about 250 g per km) | [U.S. EPA, Greenhouse Gas Equivalencies Calculator](https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator-calculations-and-references) | Found in EPA material via search; used for the "km driven" figure |
-| LEDs use at least 75% less energy than incandescent bulbs and last up to 25 times longer | [U.S. Department of Energy](https://www.energy.gov/articles/addressing-misinformation-doe-appliance-standards) | Reported by search from energy.gov pages |
-| Standby power is roughly 5–10% of residential electricity use | U.S. DOE estimate, as cited by [EnergySage](https://www.energysage.com/energy-management/phantom-loads-overview/) | Found through a secondary source citing DOE. **Re-check against the primary DOE page before submitting the report** |
-| Shifting flexible loads to off-peak hours helps the grid and your bill | General property of time-of-use tariffs | Explanatory statement, no number |
+| A typical passenger car emits about 393 g CO2 per mile (about 244 g per km) | [U.S. EPA, Greenhouse Gas Equivalencies Calculator](https://www.epa.gov/energy/greenhouse-gas-equivalencies-calculator-calculations-and-references) | **Read on the page (10 Nov 2026).** It gives 3.93 x 10^-4 metric tons CO2e per mile, from 8,887 g CO2 per gallon and 22.8 mpg. The gram figure is our conversion. An earlier draft said 400 g, which was rounded from search results |
+| A 9 W LED bulb can replace a 60 W incandescent bulb (85% less power) | [RunWatts appliance chart](https://www.runwatts.com/blog/appliance-wattage-chart) | **Read on the page.** The 85% is arithmetic: 1 - 9/60 |
+| A sleeping laptop uses about 1 to 5 W and a Wi-Fi router left on about 5 to 15 W | [RunWatts appliance chart](https://www.runwatts.com/blog/appliance-wattage-chart) | **Read on the page** |
+| Many electricity plans charge less at night; moving flexible jobs there cuts the bill without cutting comfort | This project's simulations (report, section 5) | Our own result, under our invented tariff |
+
+Removed after checking: "LEDs use at least 75% less energy and last 25 times longer" and "standby power is 5 to 10% of residential electricity use", both attributed to the U.S. Department of Energy. They came from search-result summaries. The energy.gov pages we tried (`/energysaver/led-lighting`, `/energysaver/standby-power`, `/energysaver/reduce-standby-power-and-phantom-loads`, `/energysaver/estimating-appliance-and-home-electronic-energy-use`) returned 404, so we could not confirm them. They can be added back if someone finds the current DOE page.
+
+## 6. Emission factor status
+0.445 kg CO2 per kWh is the global average for 2024 as reported in search results quoting the IEA report "Electricity 2025", section Emissions (https://www.iea.org/reports/electricity-2025/emissions). **We have not read that page ourselves:** it blocks automated access (HTTP 403 and a bot check). Open it in a normal browser and confirm the 2024 value before submitting. If it differs, change `CO2_KG_PER_KWH` in `game/engine.py`, re-run `python -m tools.simulate_players`, `python -m tools.clean_playlogs`, `python -m tools.analyze` and `python -m tools.build_report`.

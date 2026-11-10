@@ -256,7 +256,19 @@
         <div class="seg" id="evSeg"><button data-ev="on" class="on">On</button><button data-ev="off">Off</button></div></div>
       <button class="btn primary big" id="startBtn">Start the day</button>
       <div class="keys">Space pause · 1–0 toggle appliances</div>
-      <div class="menu-links"><button class="link" id="howBtn">How to play</button><button class="link" id="clearBtn">Clear saved scores</button></div>
+      <div class="menu-links"><button class="link" id="howBtn">How to play</button><button class="link" id="exportBtn">Export my runs (CSV)</button><button class="link" id="clearBtn">Clear saved scores</button></div>
+    </div>
+  </div>
+
+  <!-- export runs -->
+  <div class="overlay hidden" id="export" role="dialog" aria-modal="true" aria-label="Export runs">
+    <div class="panel wide">
+      <div class="eyebrow">Export play data</div>
+      <h2 class="help-h">Your saved runs as a CSV file</h2>
+      <p class="lead left" id="exportCount"></p>
+      <p class="lead left small">Anonymous: a random id and your game results only. No name or email. Send this file to the project team, or paste it into a text file saved as .csv.</p>
+      <textarea id="exportText" readonly spellcheck="false" aria-label="CSV text"></textarea>
+      <div class="res-actions"><button class="btn primary big" id="exportDl">Download CSV</button><button class="btn big" id="exportClose">Close</button></div>
     </div>
   </div>
 
@@ -286,6 +298,7 @@
 </div>
 <script src="scoring.js"></script>
 <script src="tips.js"></script>
+<script src="exporter.js"></script>
 <script src="game.js"></script>
 </body>
 </html>

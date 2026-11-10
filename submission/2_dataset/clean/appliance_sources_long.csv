@@ -1,0 +1,34 @@
+row_id,source_id,source_name,url,page_updated,retrieved_on,appliance_as_named,note,low_w,high_w,unit,basis,mid_w,game_key
+1,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,Refrigerator,,300.0,800.0,W,rated_running,550.0,fridge
+2,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,Oven/stove,whole oven or stove; no separate burner figure,2000.0,5000.0,W,rated_running,3500.0,cooktop
+3,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,Central air conditioning,,3000.0,4000.0,W,rated_running,3500.0,
+4,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,Window AC unit,,500.0,1400.0,W,rated_running,950.0,ac
+5,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,Light bulbs,per bulb; not split by bulb type,10.0,60.0,W,rated_running,35.0,lights
+6,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,TV,,50.0,200.0,W,rated_running,125.0,tv
+7,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,Computer,not split into desktop and laptop,30.0,70.0,W,rated_running,50.0,computer
+8,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,Washing machine,,400.0,1400.0,W,rated_running,900.0,washer
+9,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Refrigerator (compressor running),compressor runs about 30-40% of the time,150.0,250.0,W,rated_running,200.0,fridge
+10,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Refrigerator (annual energy),yearly energy; converted to average watts in cleaning,45.662100456621005,91.32420091324201,W,average,68.4931506849315,fridge
+11,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Electric oven,highest during preheat,2000.0,5000.0,W,rated_running,3500.0,cooktop
+12,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Central air conditioner (3-ton),,3000.0,5000.0,W,rated_running,4000.0,
+13,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Window AC,depends on BTU rating,500.0,1500.0,W,rated_running,1000.0,ac
+14,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Ceiling fan,depends on speed and motor,10.0,120.0,W,rated_running,65.0,fan
+15,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,LED bulb,single figure; page compares it with a 60 W incandescent bulb,9.0,9.0,W,rated_running,9.0,lights
+16,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,LED TV,55-inch model typically 80-100 W in normal viewing,50.0,200.0,W,rated_running,125.0,tv
+17,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Laptop (in use),,30.0,100.0,W,rated_running,65.0,computer
+18,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Laptop (sleeping),,1.0,5.0,W,standby,3.0,
+19,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Desktop computer (heavy use),,200.0,500.0,W,rated_running,350.0,computer
+20,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Desktop computer (idle),,30.0,80.0,W,idle,55.0,
+21,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Washing machine (front-load),,350.0,500.0,W,rated_running,425.0,washer
+22,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Washing machine (top-load),,500.0,1000.0,W,rated_running,750.0,washer
+23,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Electric water heater (tank),element only runs to reheat the tank,4000.0,5500.0,W,rated_running,4750.0,heater
+24,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Clothes iron,,1100.0,1800.0,W,rated_running,1450.0,iron
+25,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Wi-Fi router (24/7),always on,5.0,15.0,W,standby,10.0,
+26,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,Refrigerator,range across models; mini 100-250 W and side-by-side 500-800 W,100.0,800.0,W,rated_running,450.0,fridge
+27,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,Refrigerator (actual average use),page says cycling makes the long-run average lower than rating; conflicts with the annual figure in row 10,150.0,250.0,W,average,200.0,fridge
+28,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,Electric oven,,2000.0,5000.0,W,rated_running,3500.0,cooktop
+29,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,Window AC,,500.0,1500.0,W,rated_running,1000.0,ac
+30,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,Portable AC,,1000.0,2000.0,W,rated_running,1500.0,
+31,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,Central AC system,,2000.0,3500.0,W,rated_running,2750.0,
+32,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,TV,older plasma sets reach the top of the range,50.0,400.0,W,rated_running,225.0,tv
+33,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,Washing machine,higher with hot water or internal heating,400.0,1400.0,W,rated_running,900.0,washer

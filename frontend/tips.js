@@ -5,14 +5,14 @@
 (function (root) {
   const Scoring = typeof require !== "undefined" && typeof module !== "undefined" ? require("./scoring.js") : root.Scoring;
 
-  // Verified facts for the learning panel (sources in docs/research.md).
+  // Facts for the learning panel. Each was read on its source page (see docs/research.md, section 5).
   const FACTS = [
-    { text: "LED bulbs use at least 75% less energy than incandescent bulbs and can last up to 25 times longer.", src: "U.S. Department of Energy" },
-    { text: "Devices left on standby can account for roughly 5–10% of a home's electricity use.", src: "U.S. Department of Energy" },
-    { text: "A typical passenger car emits about 400 g of CO₂ per mile driven, about 250 g per km.", src: "U.S. EPA" },
-    { text: "Electricity is cleanest and cheapest when demand is low. Shifting flexible jobs like laundry to off-peak hours helps the grid as well as your bill.", src: "Time-of-use tariffs" },
+    { text: "A 9 W LED bulb can replace a 60 W incandescent bulb, which is 85% less power.", src: "RunWatts appliance chart" },
+    { text: "Devices left on still draw power: a sleeping laptop uses about 1 to 5 W and a Wi-Fi router left on about 5 to 15 W.", src: "RunWatts appliance chart" },
+    { text: "A typical passenger car emits about 393 g of CO₂ per mile, which is about 244 g per km.", src: "U.S. EPA" },
+    { text: "Many electricity plans charge less at night. Moving flexible jobs like laundry and water heating there cuts the bill without cutting comfort.", src: "This game's simulations" },
   ];
-  const KG_PER_KM_CAR = 0.4 / 1.609; // EPA: ~400 g CO2 per mile
+  const KG_PER_KM_CAR = 0.393 / 1.609; // EPA: 3.93e-4 metric tons CO2e per mile = 393 g/mile
 
   const clone = (m) => Object.fromEntries(Object.entries(m).map(([k, v]) => [k, v.slice()]));
   const money = (cfg, v) => cfg.currency + v.toFixed(2);

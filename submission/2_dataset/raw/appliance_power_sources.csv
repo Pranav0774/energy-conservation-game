@@ -1,0 +1,34 @@
+row_id,source_id,source_name,url,page_updated,retrieved_on,appliance_as_named,low,high,unit,basis,note
+1,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,Refrigerator,300,800,watts,rated_running,
+2,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,Oven/stove,2000,5000,watts,rated_running,whole oven or stove; no separate burner figure
+3,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,Central air conditioning,3000,4000,watts,rated_running,
+4,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,Window AC unit,500,1400,watts,rated_running,
+5,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,Light bulbs,10,60,watts,rated_running,per bulb; not split by bulb type
+6,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,TV,50,200,watts,rated_running,
+7,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,Computer,30,70,watts,rated_running,not split into desktop and laptop
+8,ES,EnergySage,https://www.energysage.com/electricity/house-watts/,2024-08-05,2026-11-10,Washing machine,400,1400,watts,rated_running,
+9,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Refrigerator (compressor running),150,250,watts,rated_running,compressor runs about 30-40% of the time
+10,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Refrigerator (annual energy),400,800,kWh/year,annual,yearly energy; converted to average watts in cleaning
+11,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Electric oven,2000,5000,watts,rated_running,highest during preheat
+12,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Central air conditioner (3-ton),3000,5000,watts,rated_running,
+13,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Window AC,500,1500,watts,rated_running,depends on BTU rating
+14,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Ceiling fan,10,120,watts,rated_running,depends on speed and motor
+15,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,LED bulb,9,9,watts,rated_running,single figure; page compares it with a 60 W incandescent bulb
+16,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,LED TV,50,200,watts,rated_running,55-inch model typically 80-100 W in normal viewing
+17,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Laptop (in use),30,100,watts,rated_running,
+18,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Laptop (sleeping),1,5,watts,standby,
+19,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Desktop computer (heavy use),200,500,watts,rated_running,
+20,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Desktop computer (idle),30,80,watts,idle,
+21,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Washing machine (front-load),350,500,watts,rated_running,
+22,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Washing machine (top-load),500,1000,watts,rated_running,
+23,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Electric water heater (tank),4000,5500,watts,rated_running,element only runs to reheat the tank
+24,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Clothes iron,1100,1800,watts,rated_running,
+25,RW,RunWatts,https://www.runwatts.com/blog/appliance-wattage-chart,2026-04-29,2026-11-10,Wi-Fi router (24/7),5,15,watts,standby,always on
+26,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,Refrigerator,100,800,watts,rated_running,range across models; mini 100-250 W and side-by-side 500-800 W
+27,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,Refrigerator (actual average use),150,250,watts,average,page says cycling makes the long-run average lower than rating; conflicts with the annual figure in row 10
+28,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,Electric oven,2000,5000,watts,rated_running,
+29,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,Window AC,500,1500,watts,rated_running,
+30,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,Portable AC,1000,2000,watts,rated_running,
+31,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,Central AC system,2000,3500,watts,rated_running,
+32,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,TV,50,400,watts,rated_running,older plasma sets reach the top of the range
+33,EN,Enphase,https://enphase.com/blog/homeowners/how-many-watts-do-common-home-appliances-use,2025-11-18,2026-11-10,Washing machine,400,1400,watts,rated_running,higher with hot water or internal heating

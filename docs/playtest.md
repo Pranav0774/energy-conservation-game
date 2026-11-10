@@ -5,9 +5,9 @@ A hill-climbing optimiser searches for the best day it can find at each level (1
 
 | Level | Budget | Best score found | Par used | Notes |
 |---|---|---|---|---|
-| Easy | 14 kWh | 810 | 800 | Best plan uses 9.7 kWh at 78% comfort |
-| Medium | 10 kWh | 749 | 750 | 9.3 kWh at 78% comfort |
-| Hard | 7 kWh | 636 | 640 | 7.0 kWh at 60% comfort. Par lowered from 660 |
+| Easy | 14 kWh | 809 | 809 | Rebuilt in Week 5 (see below) |
+| Medium | 10 kWh | 756 | 756 | |
+| Hard | 7 kWh | 636 | 636 | |
 
 Degenerate strategies score poorly at every level (Medium): running nothing 100, essentials only about 430, everything at full comfort about 200. A balanced plan scores 500–750.
 
@@ -56,3 +56,15 @@ Played in the browser through the actual game code (`window.__game.advance` fast
 | App smoke test and script-order test | Pass (42 tests in total) |
 | Tab hidden pauses the day | Implemented, **not tested** (the test browser cannot hide its tab) |
 | Real players | **Not done.** Use the play-test kit |
+
+## Par correction (data work)
+Scripted strategies in `tools/simulate_players.py` showed that the Week 3 par scores were too low on some event days: a simple plan beat them in 115 of 612 runs, by up to 21% (Easy with guests: par 642, plan 776). The search in `tools/balance.py` now also starts from the scripted plans, and all 18 pars were recomputed. After that no strategy beats par on any level or event. Normal-day par moved by at most 9 points (Easy 800 to 809, Medium 750 to 756, Hard 640 to 636). Ratings can differ slightly from those in earlier weeks.
+
+## Data checks
+| Check | Result |
+|---|---|
+| A real browser CSV export (3 finished days) through `tools/clean_playlogs.py` | All 3 rows kept; CO2 and hourly totals consistent |
+| Replay of the Python peak-aware Medium schedule through the live interface | Score 753 (Gold), 9.28 kWh, $1.10, identical to Python |
+| Export dialog with no saved runs | Shows "No runs saved yet" and disables Download |
+| Download button in the embedded page | Not confirmed: the test browser cannot show downloads. The dialog also shows the CSV as text to copy |
+

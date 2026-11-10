@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "description": "Only needed to rebuild the slide deck: node tools/build_deck.js",
+  "devDependencies": { "pptxgenjs": "^3.12.0" }
+}

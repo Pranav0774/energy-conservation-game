@@ -1,0 +1,11 @@
+game_key,game_appliance,game_watts,basis,n_rows,n_sources,source_min_w,source_max_w,source_median_mid_w,game_within_range,game_vs_range,design_note
+fridge,Refrigerator,60,average,2,2,45.7,250.0,134.2,True,within,
+cooktop,Electric cooktop,1200,rated_running,3,3,2000.0,5000.0,3500.0,False,below,sources give whole oven/stove; the game models one burner
+ac,Air conditioner,1500,rated_running,3,3,500.0,1500.0,1000.0,True,within,
+fan,Ceiling fan,60,rated_running,1,1,10.0,120.0,65.0,True,within,
+lights,Lights,60,rated_running,2,2,9.0,60.0,22.0,True,within,game value is a whole-home lighting circuit; sources give per bulb
+tv,Television,120,rated_running,3,3,50.0,400.0,125.0,True,within,
+computer,Computer,100,rated_running,3,2,30.0,500.0,65.0,True,within,
+washer,Washing machine,500,rated_running,4,3,350.0,1400.0,825.0,True,within,
+heater,Water heater,2000,rated_running,1,1,4000.0,5500.0,4750.0,False,below,game uses a small or instant unit so one hour is playable; sources give tank elements
+iron,Iron,1000,rated_running,1,1,1100.0,1800.0,1450.0,False,below,game value is slightly below the sources' range
